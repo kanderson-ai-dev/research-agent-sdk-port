@@ -105,7 +105,7 @@ verbatim), EDD harness + scorecard, offline stub, CI workflow.
 | Custom guardrail functions | `@input_guardrail` / `@output_guardrail` (same functions inside) | `app/guardrails.py` + `app/agents/` wiring |
 | `LLMClient` protocol + `StubLLMClient` | `Model`/`ModelProvider` interface → `StubModel` | `app/services/models.py` |
 | Graph `astream` → `JobEvent` queue | Runner emits stage events; `RunResultStreaming`/`stream_events` for intra-agent events | `app/services/job_runner.py` |
-| LangSmith tracing | `TracingProcessor` chain / `set_tracing_disabled` | `app/core/tracing.py` |
+| LangSmith tracing | Official integration: `langsmith.integrations.openai_agents_sdk.OpenAIAgentsTracingProcessor` via `set_trace_processors([...])` — traces agent steps, model calls, tool calls and handoffs into LangSmith. Registered only when `langchain_api_key` + flag are configured (explicit opt-in; it posts even if `LANGSMITH_TRACING` is unset), `set_tracing_disabled`/no processors offline | `app/core/tracing.py` |
 | `max_iterations` graph bound | `Runner.run(..., max_turns=)` per agent + round bound in runner | runner + `RunConfig` |
 | Checkpointer-based resume | `RunState`/`Session` *may* cover pause-resume — validate in Phase 1 spike before committing to the custom gate | Phase 1 finding |
 

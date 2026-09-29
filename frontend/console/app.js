@@ -85,6 +85,18 @@ const NODE_LABELS = {
   rejection_output: "Request rejected",
 };
 
+const STATUS_LABELS = {
+  queued: "Queued",
+  running: "Running",
+  awaiting_review: "Awaiting your review",
+  completed: "Completed",
+  failed: "Failed",
+};
+
+function statusLabel(status) {
+  return STATUS_LABELS[status] || status;
+}
+
 let phaseTimer = null;
 let jobStartedAt = null;
 
@@ -118,7 +130,7 @@ $("topic-form").addEventListener("submit", async (e) => {
     return;
   }
   currentJob = await resp.json();
-  $("job-status").textContent = currentJob.status;
+  $("job-status").textContent = statusLabel(currentJob.status);
   $("phase-label").textContent = "Starting…";
   $("elapsed").textContent = "";
   $("spinner").classList.remove("hidden");
@@ -155,13 +167,13 @@ function handleEvent(ev) {
   setPhase(ev);
   if (ev.node !== "__job__") return;
   if (ev.status === "awaiting_review") {
-    $("job-status").textContent = "awaiting_review";
+    $("job-status").textContent = statusLabel(ev.status);
     $("phase-label").textContent = "Waiting for your review";
     $("spinner").classList.add("hidden");
     stopPhaseTimer();
     openReview(JSON.parse(ev.detail || "{}"));
   } else if (ev.status === "completed" || ev.status === "failed") {
-    $("job-status").textContent = ev.status;
+    $("job-status").textContent = statusLabel(ev.status);
     $("spinner").classList.add("hidden");
     stopPhaseTimer();
     if (ev.status === "completed") {
@@ -210,7 +222,7 @@ async function submitReview(decision) {
   });
   if (resp.status === 202) {
     hide("review-panel");
-    $("job-status").textContent = "running";
+    $("job-status").textContent = statusLabel("running");
     $("phase-label").textContent = "Finishing up…";
     $("spinner").classList.remove("hidden");
     show("progress-panel");
@@ -285,7 +297,7 @@ async function loadResult(jobId) {
     $("citation-list").appendChild(li);
   }
   $("job-meta").textContent =
-    `job ${job.id} · status ${job.status} · est. cost $${(job.cost_usd || 0).toFixed(6)}` +
+    `job ${job.id} · status ${statusLabel(job.status)} · est. cost $${(job.cost_usd || 0).toFixed(6)}` +
     ` · ${(job.timings?.total_seconds ?? 0)}s`;
 }
 

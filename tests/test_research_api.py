@@ -416,13 +416,15 @@ def test_hitl_reject_marks_report_rejected(hitl_client: TestClient) -> None:
     assert done["report"] == "Report rejected by human reviewer."
 
 
-def test_review_requires_awaiting_status(hitl_client: TestClient) -> None:
-    submitted = _submit(hitl_client)
-    resp = hitl_client.post(
-        f"/api/v1/research/{submitted['id']}/review", json={"action": "approve"}
+def test_review_requires_awaiting_status(api_client: TestClient) -> None:
+    # Reviewing a completed job (no HITL gate on this client) must 409 —
+    # deterministic, unlike racing a fresh submission to awaiting_review.
+    submitted = _submit(api_client)
+    done = _wait_for_completion(api_client, submitted["id"])
+    resp = api_client.post(
+        f"/api/v1/research/{done['id']}/review", json={"action": "approve"}
     )
     assert resp.status_code == 409
-    _submit_and_await_review(hitl_client)  # drain the job to a stable state
 
 
 def test_review_unknown_job_404(hitl_client: TestClient) -> None:

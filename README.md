@@ -321,14 +321,23 @@ uv run python -m evaluation.run_eval  # EDD quality gate
 CI (`.github/workflows/ci.yml`): ruff → mypy strict → pytest+coverage → EDD
 gate → pip-audit → gitleaks, on `pull_request` with `contents: read`.
 
-## 🛠️ Stack
+## � Docker Deployment
+
+```bash
+docker compose up --build
+```
+
+The image is a slim `uv`-managed build; it reads `.env` at runtime — no
+secrets are baked into the image.
+
+## �🛠️ Stack
 
 Python 3.13 · FastAPI · **OpenAI Agents SDK** (`Agent`/`Runner`,
 `output_type`, `input_guardrail`/`output_guardrail`, custom `Model`,
 `RunState`) · Pydantic v2 / pydantic-settings · httpx + tenacity ·
 BeautifulSoup4/lxml + pypdf · aiosqlite · structlog ·
 prometheus-fastapi-instrumentator · PyJWT · fpdf2 · langsmith · pytest/respx
-· ruff · mypy --strict · uv.
+· ruff · mypy --strict · uv · Docker.
 
 ## Known limitations & next steps
 

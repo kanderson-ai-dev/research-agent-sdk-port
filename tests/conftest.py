@@ -18,6 +18,18 @@ from app.core.schemas import (
 from app.pipeline.deps import PipelineDeps
 from app.services.models import StubModel
 
+# Live-credential opt-in markers: the default suite must pass offline, so
+# any test that genuinely needs a real key is gated behind these.
+requires_openai_key = pytest.mark.skipif(
+    not os.environ.get("OPENAI_API_KEY"), reason="requires OPENAI_API_KEY"
+)
+requires_search_api = pytest.mark.skipif(
+    not os.environ.get("SEARCH_API_KEY"), reason="requires SEARCH_API_KEY"
+)
+requires_langsmith_key = pytest.mark.skipif(
+    not os.environ.get("LANGCHAIN_API_KEY"), reason="requires LANGCHAIN_API_KEY"
+)
+
 # The suite must run fully offline: never let SDK tracing or a stray real
 # API key turn a unit test into a network call.
 set_tracing_disabled(True)

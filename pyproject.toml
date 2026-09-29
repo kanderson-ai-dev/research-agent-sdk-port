@@ -21,6 +21,7 @@ dependencies = [
     "prometheus-client>=0.21",
     "prometheus-fastapi-instrumentator>=7.0",
     "fpdf2>=2.7",
+    "langsmith>=0.3",
 ]
 
 [dependency-groups]
@@ -51,6 +52,10 @@ ignore = ["B008"]
 
 [tool.mypy]
 strict = true
+
+[[tool.mypy.overrides]]
+module = ["playwright.*", "langsmith.*"]
+ignore_missing_imports = true
 
 [tool.pytest.ini_options]
 asyncio_mode = "auto"

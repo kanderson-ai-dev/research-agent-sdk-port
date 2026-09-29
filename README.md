@@ -13,7 +13,7 @@
 [![Type checked: mypy](https://img.shields.io/badge/type%20checked-mypy--strict-blue)](https://mypy-lang.org/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
-![Landing — the same public surface drives both framework versions](docs/screenshots/landing.png)
+![Demo: submit a topic → live progress → HITL review → cited report](docs/screenshots/demo.gif)
 
 </div>
 
@@ -100,8 +100,9 @@ review gate — while the LLM-driven roles are declarative `Agent`s with
 
 The frontend is byte-for-byte the original's (only branding strings changed)
 — the same console drives both frameworks, which is the point of the
-comparison. The captures below are from this repo's deterministic offline
-run (`scripts/capture_screenshots.py`, zero network):
+comparison. The captures below (and the demo GIF above) are from this repo's
+deterministic offline run — `scripts/capture_screenshots.py` and
+`scripts/record_demo.py`, zero network, zero secrets:
 
 ![HITL gate — the job pauses at awaiting_review and resumes on a human decision](docs/screenshots/console-review.png)
 ![Finished report — verified citations, sources, PDF export](docs/screenshots/console-report.png)

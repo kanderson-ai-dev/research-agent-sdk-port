@@ -164,21 +164,26 @@ async def run_pipeline(
         prompts.research_prompt(
             topic=ctx.topic, sub_questions=ctx.sub_questions, evidence=evidence
         ),
+        context=ctx,
         max_turns=2,
     )
     record_usage("writer", *_usage_totals(write_result))
     report = cast(ReportOutput, write_result.final_output)
     ctx.report = report.report
-    ctx.citations = report.citations
     await stage("writer")
 
     # -- output guardrail (citation verification is a filter, not a veto) --------
-    kept, dropped = verify_citations(ctx.citations, ctx.sources)
-    ctx.citations = kept
-    ctx.dropped_citations = len(dropped)
+    # The SDK output_guardrail on the writer agent already wrote the verified
+    # sets into ``ctx``; fall back to a direct check if it did not run.
+    if write_result.output_guardrail_results:
+        dropped = ctx.dropped_citations
+    else:  # pragma: no cover - defensive
+        kept, dropped_list = verify_citations(report.citations, ctx.sources)
+        ctx.citations = kept
+        ctx.dropped_citations = dropped = len(dropped_list)
     if dropped:
         ctx.errors.append(
-            f"output guardrail dropped {len(dropped)} unsupported citations"
+            f"output guardrail dropped {dropped} unsupported citations"
         )
     await stage("output_guardrail")
 
